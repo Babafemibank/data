@@ -1,0 +1,243 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Entrepreneur Store</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    .section {
+      display: none;
+      margin-top: 20px;
+    }
+    .visible {
+      display: block;
+    }
+    .welcome {
+      font-size: 2em;
+      color: blue;
+      margin-bottom: 30px;
+    }
+    button {
+      padding: 10px 20px;
+      margin: 10px;
+      cursor: pointer;
+    }
+    .coming-soon {
+      color: gray;
+      font-style: italic;
+    }
+    form {
+      max-width: 400px;
+      margin: auto;
+      text-align: left;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+      font-size: 1em;
+    }
+    input.invalid {
+      border-color: red;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Welcome Page -->
+  <div id="homeSection" class="section visible">
+    <h2 class="welcome">Welcome to Entrepreneur Store</h2>
+    <div>
+      <button onclick="selectCategory('data')">Data</button>
+      <button onclick="selectCategory('clothes')">Clothes</button>
+      <button onclick="selectCategory('bags')">Bags</button>
+      <button onclick="selectCategory('shoes')">Shoes</button>
+    </div>
+  </div>
+
+  <!-- Coming Soon -->
+  <div id="comingSoon" class="section coming-soon">
+    <p>Feature Coming Soon...</p>
+    <button onclick="goHome()">Back</button>
+  </div>
+
+  <!-- Network Selection -->
+  <div id="networkSection" class="section">
+    <h3>Select a Network</h3>
+    <button onclick="selectNetwork('MTN')">MTN</button>
+    <button onclick="selectNetwork('Airtel')">Airtel</button>
+    <button onclick="selectNetwork('Glo')">Glo</button>
+    <button onclick="selectNetwork('9mobile')">9mobile</button>
+    <br><br>
+    <button onclick="goHome()">Back</button>
+  </div>
+
+  <!-- Bundle Type -->
+  <div id="bundleSection" class="section">
+    <h3>Select a Bundle</h3>
+    <button onclick="selectBundle('Daily')">Daily</button>
+    <button onclick="selectBundle('Weekly')">Weekly</button>
+    <button onclick="selectBundle('Bi-Weekly')">Bi-Weekly</button>
+    <button onclick="selectBundle('Monthly')">Monthly</button>
+    <br><br>
+    <button onclick="goHome()">Back</button>
+  </div>
+
+  <!-- Price and Proceed -->
+  <div id="priceSection" class="section">
+    <h3>Bundle Price</h3>
+    <p id="priceText"></p>
+    <button onclick="goHome()">Start Over</button>
+    <button onclick="showForm()">Proceed</button>
+  </div>
+
+  <!-- Form Section -->
+  <div id="formSection" class="section">
+    <h3>Purchase Form</h3>
+    <form onsubmit="handleSubmit(event)">
+      <label>Network</label>
+      <input type="text" id="formNetwork" readonly>
+
+      <label>Bundle Type</label>
+      <input type="text" id="formBundle" readonly>
+
+      <label>Price</label>
+      <input type="text" id="formPrice" readonly>
+
+      <label>Phone Number</label>
+      <input type="tel" id="phone" required>
+
+      <label>Confirm Phone Number</label>
+      <input type="tel" id="confirmPhone" required>
+
+      <button type="submit" id="submitBtn" disabled>Submit</button>
+    </form>
+    <button onclick="goBackToPrice()">Back</button>
+  </div>
+  <script>
+    let selectedNetwork = '';
+    let selectedBundle = '';
+    let selectedPrice = '';
+
+    const prices = {
+      MTN: {
+        Daily: "₦350 for 500MB",
+        Weekly: "₦800 for 1GB",
+        "Bi-Weekly": "₦900 for 1GB",
+        Monthly: "₦1500 for 2GB"
+      },
+      Airtel: {
+        Daily: "₦100 for 100MB",
+        Weekly: "₦800 for 1GB",
+        "Bi-Weekly": "₦950 for 1.2GB",
+        Monthly: "₦1500 for 2GB"
+      },
+      Glo: {
+        Daily: "₦100 for 105MB",
+        Weekly: "₦500 for 700MB",
+        "Bi-Weekly": "₦250 for 500MB",
+        Monthly: "₦1000 for 2.6GB"
+      },
+      "9mobile": {
+        Daily: "₦100 for 100MB",
+        Weekly: "₦1500 for 7GB",
+        "Bi-Weekly": "₦1200 for 5GB",
+        Monthly: "₦1000 for 4GB"
+      }
+    };
+
+    function hideAll() {
+      document.querySelectorAll('.section').forEach(el => el.classList.remove('visible'));
+    }
+
+    function selectCategory(category) {
+      hideAll();
+      if (category === 'data') {
+        document.getElementById('networkSection').classList.add('visible');
+      } else {
+        document.getElementById('comingSoon').classList.add('visible');
+      }
+    }
+
+    function selectNetwork(network) {
+      selectedNetwork = network;
+      hideAll();
+      document.getElementById('bundleSection').classList.add('visible');
+    }
+
+    function selectBundle(bundle) {
+      selectedBundle = bundle;
+      selectedPrice = prices[selectedNetwork][selectedBundle];
+      document.getElementById('priceText').textContent = selectedPrice;
+      hideAll();
+      document.getElementById('priceSection').classList.add('visible');
+    }
+
+    function showForm() {
+      document.getElementById('formNetwork').value = selectedNetwork;
+      document.getElementById('formBundle').value = selectedBundle;
+      document.getElementById('formPrice').value = selectedPrice;
+      document.getElementById('phone').value = '';
+      document.getElementById('confirmPhone').value = '';
+      document.getElementById('submitBtn').disabled = true;
+      document.getElementById('confirmPhone').classList.remove('invalid');
+      hideAll();
+      document.getElementById('formSection').classList.add('visible');
+      setupPhoneValidation();
+    }
+
+    function goBackToPrice() {
+      hideAll();
+      document.getElementById('priceSection').classList.add('visible');
+    }
+
+    function goHome() {
+      selectedNetwork = '';
+      selectedBundle = '';
+      selectedPrice = '';
+      hideAll();
+      document.getElementById('homeSection').classList.add('visible');
+    }
+
+    function handleSubmit(event) {
+      event.preventDefault();
+      const phoneNumber = document.getElementById('phone').value;
+      const message = `New Data Purchase Request:\nNetwork: ${selectedNetwork}\nBundle: ${selectedBundle}\nPrice: ${selectedPrice}\nPhone Number: ${phoneNumber}`;
+      const encodedMessage = encodeURIComponent(message);
+      const waLink = `https://wa.me/2348160654914?text=${encodedMessage}`;
+      window.open(waLink, "_blank");
+      goHome();
+    }
+
+    function setupPhoneValidation() {
+      const phone = document.getElementById('phone');
+      const confirmPhone = document.getElementById('confirmPhone');
+      const submitBtn = document.getElementById('submitBtn');
+
+      function validatePhones() {
+        const match = phone.value && phone.value === confirmPhone.value;
+        if (match) {
+          confirmPhone.classList.remove('invalid');
+          submitBtn.disabled = false;
+        } else {
+          confirmPhone.classList.add('invalid');
+          submitBtn.disabled = true;
+        }
+      }
+
+      phone.addEventListener('input', validatePhones);
+      confirmPhone.addEventListener('input', validatePhones);
+    }
+  </script>
+
+</body>
+</html>
